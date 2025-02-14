@@ -35,12 +35,24 @@ void menu:: bankName(){
     std::cout<<"  \\___/ \\__,_|___/\\__|_|_| |_|   |___/   |____/ \\__,_|_| |_|_|\\_\\\n";
 }
 
+void newAccount(){
+    std::cout<<"something";
+}
+
 void typeCnp(){
+    for(int i=8; i<=10; i++){ //delete previous menu options
+        gotoxy(6, i);
+        for(int j=0; j<25;j++){
+            std::cout<<" ";
+        }
+    }
+    gotoxy(6,8);
+    std::cout << "Enter CNP: ";
+    showCursor(true);
+    long long int cnp;
+    std::cin>>cnp;
+
     while(1){
-        gotoxy(17, 8);
-        showCursor(true);
-        int long cnp;
-        std::cin>>cnp;
     }
 }
 
@@ -162,7 +174,7 @@ void menu:: firstMenu(){
 
         if(key == '\r'){ // enter
             if(position == 1){
-                std::cout<<"Nih=gga1";
+                newAccount();
             }
 
             if(position == 2){
