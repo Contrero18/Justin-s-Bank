@@ -5,7 +5,7 @@
             "name": "C/C++: g++.exe build and debug active file",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "program": "${fileDirname}\\Bank.exe",
             "args": [],
             /*"${workspaceFolder}\\teste\\input\\test5\\produse.txt",
               "${workspaceFolder}\\teste\\input\\test5\\clienti.txt", */

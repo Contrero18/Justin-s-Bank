@@ -35,10 +35,95 @@ void menu:: bankName(){
     std::cout<<"  \\___/ \\__,_|___/\\__|_|_| |_|   |___/   |____/ \\__,_|_| |_|_|\\_\\\n";
 }
 
+void typeCnp(){
+    while(1){
+        gotoxy(17, 8);
+        showCursor(true);
+        int long cnp;
+        std::cin>>cnp;
+    }
+}
+
+void accountsOption(){
+    int colors[] = {11, 11, 11};
+    char key;
+    int position = 1;
+
+    for(int i=8; i<=10; i++){ //delete previous menu options
+        gotoxy(6, i);
+        for(int j=0; j<25;j++){
+            std::cout<<" ";
+        }
+    }
+
+    while(1){
+
+        if(position == 1){
+            colors[0] = 5;
+        }
+
+        if(position == 2){
+            colors[1] = 5;
+        }
+
+        if(position == 3){
+            colors[2] = 5;
+        }
+
+        gotoxy(6,8);
+        color(colors[0]);
+        std::cout<<"1. Type Cnp";
+
+        gotoxy(6,9);
+        color(colors[1]);
+        std::cout<<"2. Go Back";
+
+        gotoxy(6,10);
+        color(colors[2]);
+        std::cout<<"3. Exit";
+
+        key = _getch();
+
+        if(key == 72 && (position >=2 && position <=3)){ // up arrow
+            position--;
+        }
+
+        if(key == 80 && (position >=1 && position <=2)){ // down arrow
+            position++;
+        }
+
+        if(key == '\r'){ // enter
+            if(position == 1){
+                typeCnp();
+            }
+
+            if(position == 2){
+                menu:: firstMenu();
+            }   
+
+            if(position == 3){
+                exit(0);
+            }   
+        }
+        
+        colors[0] = 11;
+        colors[1] = 11;
+        colors[2] = 11;
+    }
+}
+
 void menu:: firstMenu(){
     char key;
     int colors[] = {11, 11, 11};
     int position = 1;
+
+    for(int i=8; i<=10; i++){ //delete previous menu options
+        gotoxy(6, i);
+        for(int j=0; j<25;j++){
+            std::cout<<" ";
+        }
+    }
+
     while(1){
 
         if(position == 1){
@@ -81,7 +166,7 @@ void menu:: firstMenu(){
             }
 
             if(position == 2){
-                std::cout<<"Nih=gga2";
+                accountsOption();
             }   
 
             if(position == 3){

@@ -50,6 +50,11 @@
         "xstring": "cpp",
         "xtr1common": "cpp",
         "xutility": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "algorithm": "cpp",
+        "iomanip": "cpp",
+        "optional": "cpp",
+        "random": "cpp",
+        "vector": "cpp"
     }
 }
