@@ -1,0 +1,8 @@
+To have:
+meniul prin care modific chestiile
+conturile
+sa pot face:
+depuneri
+extrageri
+tranzactii intre conturi
+sa se poata vedea informatiile contului, balanta, tranzatiille
