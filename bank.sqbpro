@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="bank.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2263"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="transactions" custom_title="0" dock_id="1" table="4,12:maintransactions"/><dock_state state="000000ff00000000fd00000001000000020000043c000002befc0100000001fb000000160064006f0063006b00420072006f007700730065003101000000000000043c0000011e00ffffff000002580000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="accounts" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="69"/><column index="2" value="109"/><column index="3" value="102"/><column index="4" value="83"/><column index="5" value="62"/><column index="6" value="85"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="clients" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="109"/><column index="2" value="70"/><column index="3" value="70"/><column index="4" value="85"/><column index="5" value="124"/><column index="6" value="101"/><column index="7" value="210"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="transactions" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="88"/><column index="2" value="71"/><column index="3" value="103"/><column index="4" value="51"/><column index="5" value="102"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1*">DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS accounts;
+DROP TABLE IF EXISTS clients;
+
+CREATE TABLE clients (
+    cnp             INTEGER PRIMARY KEY UNIQUE,
+    first_name      TEXT NOT NULL,
+    last_name       TEXT NOT NULL,
+    date_of_birth   TEXT,
+    address         TEXT,
+    phone           TEXT,
+    email           TEXT UNIQUE
+);
+
+CREATE TABLE accounts (
+    account_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    cnp             INTEGER NOT NULL,
+    account_number  TEXT NOT NULL UNIQUE,
+    account_type    TEXT,
+    balance         REAL NOT NULL DEFAULT 0.0,
+    opened_date     TEXT,
+    FOREIGN KEY (cnp) REFERENCES clients(cnp)
+);
+
+CREATE TABLE transactions (
+    transaction_id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    account_id            INTEGER NOT NULL,
+    destination_account_id INTEGER,
+    transaction_date      TEXT NOT NULL,
+    amount                REAL NOT NULL,
+    transaction_type      TEXT NOT NULL,
+    FOREIGN KEY (account_id) REFERENCES accounts(account_id),
+    FOREIGN KEY (destination_account_id) REFERENCES accounts(account_id)
+);
+
+INSERT INTO clients (cnp, first_name, last_name, date_of_birth, address, phone, email) VALUES 
+(1850310111111, 'Michael', 'Smith', '1985-03-10', '101 First St', '555-1010101', 'michael.smith@example.com');
+INSERT INTO accounts (cnp, account_number, account_type, balance, opened_date) VALUES 
+(1850310111111, 'ACCT_1_1', 'Checking', 1023.47, '2022-01-01'),
+(1850310111111, 'ACCT_1_2', 'Savings', 2345.89, '2022-01-15'),
+(1850310111111, 'ACCT_1_3', 'Checking', 1987.32, '2022-02-01');
+
+INSERT INTO clients (cnp, first_name, last_name, date_of_birth, address, phone, email) VALUES 
+(2860415123456, 'Emily', 'Johnson', '1986-04-15', '202 Second Ave', '555-2020202', 'emily.johnson@example.com');
+INSERT INTO accounts (cnp, account_number, account_type, balance, opened_date) VALUES 
+(2860415123456, 'ACCT_2_1', 'Savings', 2789.56, '2022-03-01'),
+(2860415123456, 'ACCT_2_2', 'Checking', 3456.78, '2022-03-15');
+
+INSERT INTO clients (cnp, first_name, last_name, date_of_birth, address, phone, email) VALUES 
+(3850719123456, 'David', 'Williams', '1985-07-19', '303 Third Blvd', '555-3030303', 'david.williams@example.com');
+INSERT INTO accounts (cnp, account_number, account_type, balance, opened_date) VALUES 
+(3850719123456, 'ACCT_3_1', 'Checking', 5123.45, '2022-05-10'),
+(3850719123456, 'ACCT_3_2', 'Savings', 6345.21, '2022-05-15'),
+(3850719123456, 'ACCT_3_3', 'Checking', 4789.65, '2022-06-01'),
+(3850719123456, 'ACCT_3_4', 'Savings', 5987.32, '2022-06-10'),
+(3850719123456, 'ACCT_3_5', 'Checking', 4123.78, '2022-06-15');
+
+INSERT INTO clients (cnp, first_name, last_name, date_of_birth, address, phone, email) VALUES 
+(4861215123456, 'Sophia', 'Brown', '1986-12-15', '404 Fourth Rd', '555-4040404', 'sophia.brown@example.com');
+INSERT INTO accounts (cnp, account_number, account_type, balance, opened_date) VALUES 
+(4861215123456, 'ACCT_4_1', 'Savings', 789.34, '2022-07-01');
+
+INSERT INTO clients (cnp, first_name, last_name, date_of_birth, address, phone, email) VALUES 
+(1850225123456, 'James', 'Davis', '1985-02-25', '505 Fifth Ave', '555-5050505', 'james.davis@example.com');
+INSERT INTO accounts (cnp, account_number, account_type, balance, opened_date) VALUES 
+(1850225123456, 'ACCT_5_1', 'Checking', 1456.87, '2022-09-01'),
+(1850225123456, 'ACCT_5_2', 'Savings', 2789.12, '2022-09-10'),
+(1850225123456, 'ACCT_5_3', 'Checking', 3600.45, '2022-09-15'),
+(1850225123456, 'ACCT_5_4', 'Savings', 4213.99, '2022-09-20');
+
+INSERT INTO clients (cnp, first_name, last_name, date_of_birth, address, phone, email) VALUES 
+(2860310123456, 'Olivia', 'Miller', '1986-03-10', '606 Sixth St', '555-6060606', 'olivia.miller@example.com');
+INSERT INTO accounts (cnp, account_number, account_type, balance, opened_date) VALUES 
+(2860310123456, 'ACCT_6_1', 'Savings', 3321.78, '2022-11-01'),
+(2860310123456, 'ACCT_6_2', 'Checking', 2897.65, '2022-11-15');
+
+INSERT INTO clients (cnp, first_name, last_name, date_of_birth, address, phone, email) VALUES 
+(3850912123456, 'Robert', 'Wilson', '1985-09-12', '707 Seventh Ave', '555-7070707', 'robert.wilson@example.com');
+INSERT INTO accounts (cnp, account_number, account_type, balance, opened_date) VALUES 
+(3850912123456, 'ACCT_7_1', 'Checking', 765.32, '2023-01-01'),
+(3850912123456, 'ACCT_7_2', 'Savings', 1234.56, '2023-01-10'),
+(3850912123456, 'ACCT_7_3', 'Checking', 987.65, '2023-01-20');
+
+INSERT INTO clients (cnp, first_name, last_name, date_of_birth, address, phone, email) VALUES 
+(4861013123456, 'Isabella', 'Moore', '1986-10-13', '808 Eighth Blvd', '555-8080808', 'isabella.moore@example.com');
+INSERT INTO accounts (cnp, account_number, account_type, balance, opened_date) VALUES 
+(4861013123456, 'ACCT_8_1', 'Savings', 4567.89, '2023-03-01');
+
+INSERT INTO clients (cnp, first_name, last_name, date_of_birth, address, phone, email) VALUES 
+(1851123123456, 'William', 'Taylor', '1985-11-23', '909 Ninth St', '555-9090909', 'william.taylor@example.com');
+INSERT INTO accounts (cnp, account_number, account_type, balance, opened_date) VALUES 
+(1851123123456, 'ACCT_9_1', 'Checking', 3890.12, '2023-05-01'),
+(1851123123456, 'ACCT_9_2', 'Savings', 4021.34, '2023-05-10');
+
+INSERT INTO clients (cnp, first_name, last_name, date_of_birth, address, phone, email) VALUES 
+(2861225123456, 'Emma', 'Anderson', '1986-12-25', '1010 Tenth Ave', '555-10101010', 'emma.anderson@example.com');
+INSERT INTO accounts (cnp, account_number, account_type, balance, opened_date) VALUES 
+(2861225123456, 'ACCT_10_1', 'Savings', 3100.67, '2023-07-01'),
+(2861225123456, 'ACCT_10_2', 'Checking', 3200.89, '2023-07-05'),
+(2861225123456, 'ACCT_10_3', 'Savings', 3300.23, '2023-07-10'),
+(2861225123456, 'ACCT_10_4', 'Checking', 3400.45, '2023-07-15'),
+(2861225123456, 'ACCT_10_5', 'Savings', 3500.12, '2023-07-20');
+
+INSERT INTO transactions (account_id, destination_account_id, transaction_date, amount, transaction_type) VALUES 
+(2, 3, '2022-03-02', 500, 'Transfer'),
+(1, NULL, '2022-02-15', 8937, 'Deposit'),
+(4, NULL, '2022-04-22', 300.47, 'Payment'),
+(12, NULL, '2022-09-01', 450, 'Withdrawal'),
+(8, 9, '2022-06-01', 400, 'Transfer'),
+(27, 28, '2023-07-16', 1100, 'Transfer'),
+(15, NULL, '2022-09-15', 800.32, 'Payment'),
+(16, 17, '2022-11-03', 500, 'Transfer'),
+(10, NULL, '2022-06-10', 900.56, 'Payment'),
+(23, NULL, '2023-05-05', 800.12, 'Payment'),
+(5, NULL, '2022-03-12', 400.78, 'Payment'),
+(4, NULL, '2022-03-05', 750, 'Deposit'),
+(17, NULL, '2022-11-05', 1200, 'Deposit'),
+(17, NULL, '2022-11-06', 800.45, 'Payment'),
+(20, 18, '2023-01-10', 500, 'Transfer'),
+(23, NULL, '2023-05-12', 1000, 'Withdrawal'),
+(7, NULL, '2022-05-20', 300, 'Deposit'),
+(27, NULL, '2023-07-15', 1200.67, 'Payment'),
+(11, NULL, '2022-07-01', 300, 'Deposit'),
+(5, NULL, '2022-03-10', 1200.34, 'Payment'),
+(24, NULL, '2023-07-01', 900, 'Deposit'),
+(2, NULL, '2022-02-20', 300.89, 'Payment'),
+(8, NULL, '2022-06-03', 600, 'Deposit'),
+(10, 6, '2022-06-15', 600, 'Transfer'),
+(9, NULL, '2022-06-05', 600, 'Deposit'),
+(28, NULL, '2023-07-20', 1300, 'Deposit'),
+(3, NULL, '2022-02-25', 600, 'Withdrawal'),
+(26, NULL, '2023-07-10', 1100, 'Withdrawal'),
+(25, 26, '2023-07-05', 1000, 'Transfer'),
+(24, NULL, '2023-07-02', 300.56, 'Payment'),
+(13, 14, '2022-09-05', 700, 'Transfer'),
+(14, NULL, '2022-09-10', 600, 'Deposit'),
+(16, NULL, '2022-11-01', 1000, 'Withdrawal'),
+(18, NULL, '2023-01-01', 300.67, 'Payment'),
+(21, NULL, '2023-03-01', 600, 'Deposit'),
+(22, NULL, '2023-05-01', 700, 'Withdrawal'),
+(20, NULL, '2023-01-12', 900, 'Deposit'),
+(7, NULL, '2022-05-25', 300, 'Withdrawal'),
+(6, NULL, '2022-05-15', 500, 'Withdrawal'),
+(19, NULL, '2023-01-05', 400, 'Withdrawal'),
+(2, NULL, '2022-04-05', 7934.12, 'Payment'),
+(9, NULL, '2022-04-10', 53.23, 'Payment'),
+(5, NULL, '2022-04-15', 2478.93, 'Payment'),
+(14, NULL, '2022-04-20', 671.45, 'Payment'),
+(8, NULL, '2022-04-25', 340.78, 'Payment'),
+(3, NULL, '2022-04-30', 9123.56, 'Payment'),
+(7, NULL, '2022-05-02', 458.23, 'Payment'),
+(11, NULL, '2022-05-07', 127.89, 'Payment'),
+(16, NULL, '2022-05-12', 985.34, 'Payment');
+
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
