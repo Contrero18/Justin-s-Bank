@@ -3,6 +3,9 @@
 #include <conio.h>
 #include <string>
 #include <sqlite3.h>
+#include "client.h"
+#include "accounts.h"
+#include "transaction.h"
 
 namespace menu{
     void bankName();
