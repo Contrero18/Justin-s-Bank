@@ -9,5 +9,5 @@
 
 namespace menu{
     void bankName();
-    void firstMenu();
+    void firstMenu(sqlite3 * dataBase);
 }

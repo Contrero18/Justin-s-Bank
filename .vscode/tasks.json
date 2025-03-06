@@ -9,7 +9,10 @@
                 "-g",
                 "${workspaceFolder}/*.cpp",
                 "-o",
-                "${fileDirname}\\Bank.exe"
+                "${fileDirname}\\Bank.exe",
+                "-I", "C:/msys64/ucrt64/include",   // Include SQLite3 headers
+                "-L", "C:/msys64/ucrt64/lib",       // SQLite3 library path
+                "-lsqlite3"                         // Link SQLite3 library
             ],
             "options": {
                 "cwd": "${fileDirname}"

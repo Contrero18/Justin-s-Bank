@@ -35,12 +35,87 @@ void menu:: bankName(){
     std::cout<<"  \\___/ \\__,_|___/\\__|_|_| |_|   |___/   |____/ \\__,_|_| |_|_|\\_\\\n";
 }
 
-void newAccount(){
-    std::cout<<"something";
+void newAccount(sqlite3 * dataBase){
+    std::cout<<"somethingsomethingsomethingsomethingsomethingsomethingsomethingsomething";
 }
 
-void typeCnp(){
+void typeCnp(sqlite3 * dataBase);
+
+
+
+void wrongCnp(sqlite3 * dataBase){
+    showCursor(false);
     for(int i=8; i<=10; i++){ //delete previous menu options
+        gotoxy(6, i);
+        for(int j=0; j<25;j++){
+            std::cout<<" ";
+        }
+    }
+    gotoxy(6,8);
+    std::cout << "CNP INVALID ";
+    //menu fro invalid
+    int colors[] = {11, 11, 11};
+    char key;
+    int position = 1;
+
+    while(1){
+
+        if(position == 1){
+            colors[0] = 5;
+        }
+
+        if(position == 2){
+            colors[1] = 5;
+        }
+
+        if(position == 3){
+            colors[2] = 5;
+        }
+
+        gotoxy(6,10);
+        color(colors[0]);
+        std::cout<<"1. Type Cnp Again";
+
+        gotoxy(6,11);
+        color(colors[1]);
+        std::cout<<"2. Go Back";
+
+        gotoxy(6,12);
+        color(colors[2]);
+        std::cout<<"3. Exit";
+
+        key = _getch();
+
+        if(key == 72 && (position >=2 && position <=3)){ // up arrow
+            position--;
+        }
+
+        if(key == 80 && (position >=1 && position <=2)){ // down arrow
+            position++;
+        }
+
+        if(key == '\r'){ // enter
+            if(position == 1){
+                typeCnp(dataBase);
+            }
+
+            if(position == 2){
+                menu:: firstMenu(dataBase);
+            }   
+
+            if(position == 3){
+                exit(0);
+            }   
+        }
+        
+        colors[0] = 11;
+        colors[1] = 11;
+        colors[2] = 11;
+    }
+}
+
+void typeCnp(sqlite3 * dataBase){
+    for(int i=8; i<=12; i++){ //delete previous menu options
         gotoxy(6, i);
         for(int j=0; j<25;j++){
             std::cout<<" ";
@@ -50,13 +125,24 @@ void typeCnp(){
     std::cout << "Enter CNP: ";
     showCursor(true);
     long long int cnp;
-    std::cin>>cnp;
-
-    while(1){
+    if(!(std::cin>>cnp)){   //checking if cnp is valid
+        wrongCnp(dataBase);
     }
+    long long aux=cnp;
+    int nr = 0;
+    while(aux){
+        aux=aux/10;
+        nr++;
+    }
+    if(nr != 13){
+        wrongCnp(dataBase);
+    }
+    showCursor(false);
+
+    
 }
 
-void accountsOption(){
+void accountsOption(sqlite3 * dataBase){
     int colors[] = {11, 11, 11};
     char key;
     int position = 1;
@@ -106,11 +192,11 @@ void accountsOption(){
 
         if(key == '\r'){ // enter
             if(position == 1){
-                typeCnp();
+                typeCnp(dataBase);
             }
 
             if(position == 2){
-                menu:: firstMenu();
+                menu:: firstMenu(dataBase);
             }   
 
             if(position == 3){
@@ -124,7 +210,7 @@ void accountsOption(){
     }
 }
 
-void menu:: firstMenu(){
+void menu:: firstMenu(sqlite3 * dataBase){
     char key;
     int colors[] = {11, 11, 11};
     int position = 1;
@@ -174,11 +260,11 @@ void menu:: firstMenu(){
 
         if(key == '\r'){ // enter
             if(position == 1){
-                newAccount();
+                newAccount(dataBase);
             }
 
             if(position == 2){
-                accountsOption();
+                accountsOption(dataBase);
             }   
 
             if(position == 3){
