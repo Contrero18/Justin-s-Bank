@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <string>
 #include <sqlite3.h>
+#include <ctime>
 #include "client.h"
 #include "accounts.h"
 #include "transaction.h"
