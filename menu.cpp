@@ -35,6 +35,8 @@ void menu:: bankName(){
     std::cout<<"  \\___/ \\__,_|___/\\__|_|_| |_|   |___/   |____/ \\__,_|_| |_|_|\\_\\\n";
 }
 
+void typeCnp(sqlite3 * dataBase, std::string sentFrom);
+
 int numberOfAccounts(sqlite3 * dataBase, long long cnp){
     const char* sql = "SELECT COUNT(*) FROM accounts WHERE cnp = ?";
     sqlite3_stmt* stmt;
@@ -204,6 +206,146 @@ bool card(){
     }
 }
 
+std::string dateOfBirth(long long cnp){
+    int day, month, year;
+    long long aux = cnp;
+    if(aux / 1000000000000 == 1 || aux / 1000000000000 == 2){
+        year = 19;
+    }else{
+        year = 20;
+    }
+    aux = cnp;
+    year = year * 100 + (aux / 10000000000) % 100;
+    aux = cnp;
+    month = (aux / 100000000) % 100;
+    day = (cnp / 1000000 ) % 100;
+    
+    std::ostringstream dateStream;
+    dateStream << year << "-" 
+           << std::setw(2) << std::setfill('0') << month << "-"
+           << std::setw(2) << std::setfill('0') << day;
+
+    return dateStream.str();
+}
+
+bool rightData(){
+    gotoxy(6,16);
+
+    std::cout << "Is the data correct?";
+    
+    int colors[] = {11, 11};
+    char key;
+    int position = 1;
+
+    while(1){
+
+        if(position == 1){
+            colors[0] = 5;
+        }
+
+        if(position == 2){
+            colors[1] = 5;
+        }
+        
+
+        gotoxy(6,18);
+        color(colors[0]);
+        std::cout<<"1. Yes";
+
+        gotoxy(6,19);
+        color(colors[1]);
+        std::cout<<"2. No";
+
+        key = _getch();
+
+        if(key == 72 && (position == 2)){ // up arrow
+            position--;
+        }
+
+        if(key == 80 && (position ==1)){ // down arrow
+            position++;
+        }
+
+        if(key == '\r'){ // enter
+            if(position == 1){
+                return true;
+            }
+
+            if(position == 2){
+                return false;
+            }  
+        }
+        
+        colors[0] = 11;
+        colors[1] = 11;
+    }
+}
+
+void tryAgain(sqlite3 * dataBase){
+    gotoxy(6,16);
+
+    std::cout << "Do you want to try again?";
+    
+    int colors[] = {11, 11};
+    char key;
+    int position = 1;
+
+    while(1){
+
+        if(position == 1){
+            colors[0] = 5;
+        }
+
+        if(position == 2){
+            colors[1] = 5;
+        }
+        
+
+        gotoxy(6,18);
+        color(colors[0]);
+        std::cout<<"1. Yes";
+
+        gotoxy(6,19);
+        color(colors[1]);
+        std::cout<<"2. No";
+
+        key = _getch();
+
+        if(key == 72 && (position == 2)){ // up arrow
+            position--;
+        }
+
+        if(key == 80 && (position ==1)){ // down arrow
+            position++;
+        }
+
+        if(key == '\r'){ // enter
+            if(position == 1){
+                for(int i=8; i<=20; i++){ //delete previous menu options
+                    gotoxy(0, i);
+                    for(int j=0; j<63;j++){
+                        std::cout<<" ";
+                    }
+                }
+                typeCnp(dataBase, "newAccount");
+            }
+
+            if(position == 2){
+                for(int i=8; i<=20; i++){ //delete previous menu options
+                    gotoxy(0, i);
+                    for(int j=0; j<63;j++){
+                        std::cout<<" ";
+                    }
+                }
+                menu:: firstMenu(dataBase);
+            }  
+        }
+        
+        colors[0] = 11;
+        colors[1] = 11;
+    }
+}
+
 void newAccount(sqlite3 * dataBase, long long cnp){
     int accountsNumber = numberOfAccounts(dataBase, cnp);
 
@@ -235,24 +377,167 @@ void newAccount(sqlite3 * dataBase, long long cnp){
     sqlite3_finalize(stmt);
 }
 
-void newClient(sqlite3 * dataBase){
+void addClient(sqlite3 * dataBase, Client *& client){
+    const char* sql = "INSERT INTO clients (cnp, first_name, last_name, date_of_birth, address, phone, email) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(dataBase, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(dataBase) << std::endl;
+        sqlite3_close(dataBase);
+        exit(1);
+    }
 
+    sqlite3_bind_int64(stmt, 1, client->getCnp());// cnp
+    sqlite3_bind_text(stmt, 2, client->getFirst_name().c_str(), -1, SQLITE_STATIC);// first_name
+    sqlite3_bind_text(stmt, 3, client->getFirst_name().c_str(), -1, SQLITE_STATIC);// last_name
+    sqlite3_bind_text(stmt, 4, client->getDate().c_str(), -1, SQLITE_STATIC);// date_of_birth
+    sqlite3_bind_text(stmt, 5, client->getAddress().c_str(), -1, SQLITE_STATIC); // address
+    sqlite3_bind_text(stmt, 6, client->getPhone().c_str(), -1, SQLITE_STATIC);// phone
+    sqlite3_bind_text(stmt, 7, client->getEmail().c_str(), -1, SQLITE_STATIC); // email
+
+    for(int i=8; i<=20; i++){ //delete previous menu options
+        gotoxy(0, i);
+        for(int j=0; j<63;j++){
+            std::cout<<" ";
+        }
+    }
+
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        std::cerr << "Execution failed: " << sqlite3_errmsg(dataBase) << std::endl;
+        exit(1);
+    } else {
+        gotoxy(6, 8);
+        std::cout << "Client added successfully." << std::endl;
+        gotoxy(6, 9);
+        Sleep(700);
+        std::cout << "Return to main menu in 3";
+        Sleep(700);
+        gotoxy(6, 9);
+        std::cout << "Return to main menu in 2";
+        Sleep(700);
+        gotoxy(6, 9);
+        std::cout << "Return to main menu in 1";
+        Sleep(300);
+        menu:: firstMenu(dataBase);
+    }
+
+    sqlite3_finalize(stmt);
 }
 
-void typeCnp(sqlite3 * dataBase, std::string sentFrom);
-
-
-
-void wrongCnp(sqlite3 * dataBase, std::string sentFrom){
-    showCursor(false);
-    for(int i=8; i<=10; i++){ //delete previous menu options
-        gotoxy(6, i);
+void newClient(sqlite3 * dataBase, long long cnp){
+    for(int i=8; i<=13; i++){ //delete previous menu options
+        gotoxy(0, i);
         for(int j=0; j<25;j++){
             std::cout<<" ";
         }
     }
     gotoxy(6,8);
-    std::cout << "CNP INVALID ";
+    std::cout << "Would you like to proceed with registering a new client?";
+    
+    int colors[] = {11, 11};
+    char key;
+    int position = 1;
+
+    while(1){
+
+        if(position == 1){
+            colors[0] = 5;
+        }
+
+        if(position == 2){
+            colors[1] = 5;
+        }
+        
+
+        gotoxy(6,10);
+        color(colors[0]);
+        std::cout<<"1. Yes";
+
+        gotoxy(6,11);
+        color(colors[1]);
+        std::cout<<"2. No";
+
+        key = _getch();
+
+        if(key == 72 && (position == 2)){ // up arrow
+            position--;
+        }
+
+        if(key == 80 && (position ==1)){ // down arrow
+            position++;
+        }
+
+        if(key == '\r'){ // enter
+            if(position == 1){
+                break;
+            }
+
+            if(position == 2){
+                menu:: firstMenu(dataBase);
+            }  
+        }
+        
+        colors[0] = 11;
+        colors[1] = 11;
+    }
+
+    for(int i=8; i<=13; i++){ //delete previous menu options
+        gotoxy(0, i);
+        for(int j=0; j<63;j++){
+            std::cout<<" ";
+        }
+    }
+
+    std::string firstName, lastName, address, phone, email;
+
+    showCursor(true);
+    gotoxy(6,8);
+    std::cout<<"Cnp: "<<cnp;
+
+    gotoxy(6,9);
+    std::cout<<"First name: "; std::cin>>firstName;
+
+    gotoxy(6,10);
+    std::cout<<"Last name: "; std::cin>>lastName;
+
+    gotoxy(6,11);
+    std::string date = dateOfBirth(cnp);
+    std::cout<<"Date of birth: " << date;
+
+    gotoxy(6,12);
+    std::cin.ignore();
+    std::cout<<"Address: "; std::getline(std::cin, address);
+
+    gotoxy(6,13);
+    std::cout<<"Phone: "; std::cin>>phone;
+
+    gotoxy(6,14);
+    std::cout<<"Email: "; std::cin>>email;
+
+    showCursor(false);
+
+    bool ok = rightData();
+
+    if(ok == false){
+        tryAgain(dataBase);
+    }else{
+        Client *client = new Client(cnp, firstName, lastName, date, address, phone, email);
+        addClient(dataBase, client);
+        delete client;
+    }
+    
+}
+
+void wrongCnp(sqlite3 * dataBase, std::string sentFrom, long long cnp){
+    showCursor(false);
+    for(int i=8; i<=13; i++){ //delete previous menu options
+        gotoxy(0, i);
+        for(int j=0; j<25;j++){
+            std::cout<<" ";
+        }
+    }
+    gotoxy(6,8);
+    std::cout << "Invalid CNP format! Please enter a valid 13-digit numeric CNP. ";
     //menu fro invalid
     int colors[] = {11, 11, 11, 11};
     char key;
@@ -309,7 +594,7 @@ void wrongCnp(sqlite3 * dataBase, std::string sentFrom){
             }
 
             if(position == 2){
-                newClient(dataBase);
+                typeCnp(dataBase, sentFrom);
             }  
 
             if(position == 3){
@@ -329,9 +614,9 @@ void wrongCnp(sqlite3 * dataBase, std::string sentFrom){
 }
 
 void typeCnp(sqlite3 * dataBase, std::string sentFrom){
-    for(int i=8; i<=12; i++){ //delete previous menu options
+    for(int i=8; i<=13; i++){ //delete previous menu options
         gotoxy(6, i);
-        for(int j=0; j<25;j++){
+        for(int j=0; j<63;j++){
             std::cout<<" ";
         }
     }
@@ -340,7 +625,7 @@ void typeCnp(sqlite3 * dataBase, std::string sentFrom){
     showCursor(true);
     long long int cnp;
     if(!(std::cin>>cnp)){   //checking if cnp is valid
-        wrongCnp(dataBase, sentFrom);
+        wrongCnp(dataBase, sentFrom, cnp);
     }
     long long aux=cnp;
     int nr = 0;
@@ -349,11 +634,15 @@ void typeCnp(sqlite3 * dataBase, std::string sentFrom){
         nr++;
     }
     if(nr != 13){
-        wrongCnp(dataBase, sentFrom);
+        wrongCnp(dataBase, sentFrom, cnp);
     }
     showCursor(false);
 
     bool ok=checkingCnp(dataBase, cnp);
+
+    if(ok == 0){
+        newClient(dataBase, cnp);
+    }
 
     if(ok == 1 && sentFrom == "newAccount")
     {
@@ -367,9 +656,9 @@ void accountsOption(sqlite3 * dataBase){
     char key;
     int position = 1;
 
-    for(int i=8; i<=10; i++){ //delete previous menu options
+    for(int i=8; i<=13; i++){ //delete previous menu options
         gotoxy(6, i);
-        for(int j=0; j<25;j++){
+        for(int j=0; j<63;j++){
             std::cout<<" ";
         }
     }
@@ -435,9 +724,9 @@ void menu:: firstMenu(sqlite3 * dataBase){
     int colors[] = {11, 11, 11};
     int position = 1;
 
-    for(int i=8; i<=10; i++){ //delete previous menu options
+    for(int i=8; i<=13; i++){ //delete previous menu options
         gotoxy(6, i);
-        for(int j=0; j<25;j++){
+        for(int j=0; j<63;j++){
             std::cout<<" ";
         }
     }

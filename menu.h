@@ -4,6 +4,8 @@
 #include <string>
 #include <sqlite3.h>
 #include <ctime>
+#include <sstream>
+#include <iomanip>
 #include "client.h"
 #include "accounts.h"
 #include "transaction.h"
