@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 #include <Windows.h>
 #include <conio.h>
 #include <string>

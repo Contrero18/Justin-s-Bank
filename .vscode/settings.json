@@ -57,5 +57,6 @@
         "random": "cpp",
         "vector": "cpp",
         "sstream": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "enabled"
 }
